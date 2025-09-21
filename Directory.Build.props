@@ -1,0 +1,7 @@
+<Project>
+  <ItemGroup>
+    <!-- Ignore macOS AppleDouble artifacts -->
+    <Compile Remove="**/._*.cs" />
+    <None Remove="**/._*" />
+  </ItemGroup>
+</Project>

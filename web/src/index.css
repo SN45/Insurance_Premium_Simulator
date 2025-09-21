@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light dark; }
+html, body, #root { height: 100%; }
+
+
+/* --- Slider track/thumb contrast for both themes --- */
+input[type="range"] {
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: #e5e7eb;            /* light track */
+}
+.dark input[type="range"] {
+  background: #262626;            /* dark track */
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #111827;            /* light thumb */
+  border: 2px solid #ffffff;      /* ring separates from card */
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.dark input[type="range"]::-webkit-slider-thumb {
+  background: #ffffff;            /* dark thumb */
+  border-color: #0a0a0a;          /* matches dark page */
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 9999px;
+  background: #111827; border: 2px solid #ffffff;
+}
+.dark input[type="range"]::-moz-range-thumb {
+  background: #ffffff; border-color: #0a0a0a;
+}

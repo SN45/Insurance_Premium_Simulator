@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ps_sql
+    platform: linux/amd64
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1433:1433"
+    volumes: [ "mssql-data:/var/opt/mssql" ]
+
+  redis:
+    image: redis:7-alpine
+    container_name: ps_redis
+    ports: [ "6379:6379" ]
+    command: ["redis-server","--appendonly","yes"]
+    volumes: [ "redis-data:/data" ]
+
+volumes:
+  mssql-data:
+  redis-data:
