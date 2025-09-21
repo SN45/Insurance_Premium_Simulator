@@ -43,3 +43,13 @@ web/.env.local
 
 
 Thumbs.db
+web/node_modules/
+**/bin/
+**/obj/
+*.env
+.env
+web/.env
+.DS_Store
+._*
+.vscode/
+
