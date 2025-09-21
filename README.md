@@ -17,3 +17,4 @@ Full-stack demo showing how lifestyle & telematics metrics impact an insurance p
 
 ## Env
 Copy `web/.env.example` to `web/.env` and fill your values.
+# Premium-Simulator
