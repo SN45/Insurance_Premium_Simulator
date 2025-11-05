@@ -1,0 +1,29 @@
+# ---------- Build stage ----------
+    FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+    WORKDIR /src
+    
+    # Copy the whole repo so cross-project references (Shared, Worker) restore fine
+    COPY . .
+    
+    # If your solution file exists at the repo root, uncomment the next two lines and replace YourSolution.sln
+    # RUN dotnet restore YourSolution.sln
+    # RUN dotnet publish src/api/Api.csproj -c Release -o /out
+    
+    # If you don't have a .sln or want a per-project build, use this:
+    RUN dotnet restore src/api/Api.csproj
+    RUN dotnet publish src/api/Api.csproj -c Release -o /out
+    
+    # ---------- Runtime stage ----------
+    FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
+    WORKDIR /app
+    
+    # The API will listen on port 8080 in the container
+    ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+    EXPOSE 8080
+    
+    # Optional: make timeouts a bit nicer for cloud LBs
+    ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+    
+    COPY --from=build /out ./
+    ENTRYPOINT ["dotnet", "Api.dll"]
+    

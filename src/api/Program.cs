@@ -273,6 +273,9 @@ app.MapGet("/metrics/latest", async (Guid userId, AppDb db) =>
     return Results.Ok(dto);
 });
 
+app.Urls.Add("http://0.0.0.0:8080");
+
+
 app.Run();
 
 // ================== Records / DTOs ==================

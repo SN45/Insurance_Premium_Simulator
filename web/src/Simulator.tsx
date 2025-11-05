@@ -12,8 +12,9 @@ import { currentUser } from './auth';
 const DEMO_USER = '00000000-0000-0000-0000-000000000001';
 
 export default function Simulator() {
-  const u = currentUser();                           // { id, email, fullName } | null
-  const USER_ID = u?.id ?? DEMO_USER;                // using demo Guid unless you wire mapping
+  const u = currentUser(); // { id, email, fullName } | null (Identity)
+  // For now, always use demo GUID for backend data:
+  const USER_GUID_FOR_API = DEMO_USER;
 
   const [vals, setVals] = useState<Record<string, number>>({
     Steps: 6000,
@@ -41,7 +42,7 @@ export default function Simulator() {
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(async () => {
       try {
-        const r = await postWhatIf(USER_ID, next);
+        const r = await postWhatIf(USER_GUID_FOR_API, next);
         setResult(r);
         setErr(null);
       } catch (e: any) {
@@ -56,16 +57,16 @@ export default function Simulator() {
     setErr(null);
     try {
       const [preview, latest] = await Promise.all([
-        getPreview(USER_ID),
-        getLatestMetrics(USER_ID),
+        getPreview(USER_GUID_FOR_API),
+        getLatestMetrics(USER_GUID_FOR_API),
       ]);
       setVals({
-        Steps: Number((latest as any).Steps ?? 6000),
-        RestingHR: Number((latest as any).RestingHR ?? 68),
-        BMI: Number((latest as any).BMI ?? 26),
-        SleepHours: Number((latest as any).SleepHours ?? 7),
+        Steps:        Number((latest as any).Steps        ?? 6000),
+        RestingHR:    Number((latest as any).RestingHR    ?? 68),
+        BMI:          Number((latest as any).BMI          ?? 26),
+        SleepHours:   Number((latest as any).SleepHours   ?? 7),
         DrivingScore: Number((latest as any).DrivingScore ?? 82),
-        MilesDriven: Number((latest as any).MilesDriven ?? 450),
+        MilesDriven:  Number((latest as any).MilesDriven  ?? 450),
       });
       setResult(preview);
     } catch (e: any) {
@@ -75,12 +76,12 @@ export default function Simulator() {
     }
   };
 
-  // Generate PDF of current view (show name in the “User:” line)
+  // Generate PDF of current view (show signed-in name if present)
   const getQuotePdf = async () => {
     if (!result) return;
     setBusyPdf(true);
     try {
-      const userLine = u?.fullName ? `${u.fullName} (${USER_ID})` : USER_ID;
+      const userLine = u?.fullName ? `${u.fullName} (${USER_GUID_FOR_API})` : USER_GUID_FOR_API;
       await downloadQuotePdf({
         userId: userLine,
         premium: result.premium,
@@ -97,8 +98,8 @@ export default function Simulator() {
     }
   };
 
-  // Initial load + whenever the (auth) user changes
-  useEffect(() => { void resetToDb(); /* eslint-disable-line react-hooks/exhaustive-deps */ }, [USER_ID]);
+  // Initial load + whenever auth user changes (keeps greeting fresh)
+  useEffect(() => { void resetToDb(); /* eslint-disable-line react-hooks/exhaustive-deps */ }, [u?.id]);
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8 grid gap-6 md:grid-cols-5">
